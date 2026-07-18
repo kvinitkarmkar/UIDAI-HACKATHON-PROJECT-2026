@@ -1,4 +1,4 @@
-# 🇮🇳 Aadhaar Data Analytics & Policy Optimization
+# Aadhaar Data Analytics & Policy Optimization
 
 ### **Project Overview**
 
