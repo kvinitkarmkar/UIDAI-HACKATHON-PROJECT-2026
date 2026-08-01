@@ -8,7 +8,7 @@ This project focuses on the large-scale analysis of Aadhaar update trends across
 
 ### **Key Impact & Data Audit (Post-Cleaning)**
 
-<img src="visuals/charts/duplicate_breakdown.png" width="80%">
+<img src="visuals/charts/duplicate_breakdown.png" width="100%">
 
 The data cleaning process was critical in identifying system inefficiencies:
 
