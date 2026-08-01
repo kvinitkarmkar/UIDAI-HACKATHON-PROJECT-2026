@@ -23,11 +23,7 @@ The data cleaning process was critical in identifying system inefficiencies:
 
 We identified "Hotspots" with the highest duplication counts, requiring immediate infrastructure upgrades:
 
-1. **West Bengal - North 24 Parganas**: 6,870 duplicates
-2. **Andhra Pradesh - East Godavari**: 6,438 duplicates
-3. **West Bengal - Barddhaman**: 5,976 duplicates
-4. **Maharashtra - Pune**: 5,632 duplicates
-
+<img src="visuals/charts/infrastructure_priority_districts.png"  width="100%">
 ---
 
 ### **Strategic Policy Recommendations**
