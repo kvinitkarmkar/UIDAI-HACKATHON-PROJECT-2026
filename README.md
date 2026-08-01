@@ -6,7 +6,7 @@ This project focuses on the large-scale analysis of Aadhaar update trends across
 
 ---
 
-### **🚀 Key Impact & Data Audit (Post-Cleaning)**
+### **Key Impact & Data Audit (Post-Cleaning)**
 
 The data cleaning process was critical in identifying system inefficiencies:
 
@@ -17,7 +17,7 @@ The data cleaning process was critical in identifying system inefficiencies:
 
 ---
 
-### **📍 Infrastructure Priority: Critical Districts**
+### **Infrastructure Priority: Critical Districts**
 
 We identified "Hotspots" with the highest duplication counts, requiring immediate infrastructure upgrades:
 
@@ -28,7 +28,7 @@ We identified "Hotspots" with the highest duplication counts, requiring immediat
 
 ---
 
-### **💡 Strategic Policy Recommendations**
+### **Strategic Policy Recommendations**
 
 #### **Strategy A: Infrastructure & Load Management (High-Volume)**
 
@@ -43,7 +43,7 @@ We identified "Hotspots" with the highest duplication counts, requiring immediat
 
 ---
 
-### **💰 Economic Impact & ROI**
+### **Economic Impact & ROI**
 
 * **Subsidy Leakage Prevention**: Purging duplicates and ghost beneficiaries is projected to save **₹12,000 Cr/year**.
 * **Operational Savings**: Decentralizing updates to school camps will reduce manual processing costs by **₹3,500 Cr/year**.
@@ -51,56 +51,13 @@ We identified "Hotspots" with the highest duplication counts, requiring immediat
 
 ---
 
-### **🛠 Tech Stack**
+### **Tech Stack**
 
 * **Language**: Python (Pandas, Matplotlib, Seaborn)
 * **Analysis**: Geographic Mapping, De-duplication Algorithms, Demographic Profiling
 
 ---
-
-### **⚙️ How to Run the Analysis**
-
-Follow these steps to set up the environment and execute the data cleaning and visualization pipeline:
-
-#### **1. Prerequisites**
-
-Ensure you have **Python 3.10+** installed on your system.
-
-#### **2. Clone the Repository**
-
-```bash
-git clone https://github.com/KVINITKARMKAR/UIDAI-HACKATHON-PROJECT-2026.git
-cd UIDAI-HACKATHON-PROJECT-2026
-
-```
-
-#### **3. Install Dependencies**
-
-Install the required Python libraries using the `requirements.txt` file:
-
-```bash
-pip install pandas matplotlib seaborn numpy
-
-```
-
-#### **4. Data Preparation**
-
-* Place your raw Aadhaar dataset in the `Data/raw/` directory.
-* Ensure the file is re-named `your_data.csv` (or update the path in the script).
-
-#### **5. Execute the Analysis Pipeline**
-
-Run the main script to perform data cleaning, de-duplication, and generate visualizations:
-
-
-#### **6. View Results**
-
-* **Cleaned Data**: The verified dataset (with **-25.8% records**) will be saved in `Data/processed/`.
-* **Visualizations**: All charts (Regional Distribution, Top 10 States, and High Duplication Zones) will be available in the `visuals/charts` folder.
-
----
-
-### **📁 Project Directory Structure**
+### **Project Directory Structure**
 
 ```text
 UIDAI-HACKATHON-PROJECT-2026/
@@ -114,9 +71,7 @@ UIDAI-HACKATHON-PROJECT-2026/
 
 ```
 
----
-
-### **✅ Final Project Checklist**
+### **Final Project Checklist**
 
 * **Data Cleaning**: Handled **4.7 Lakh duplicates**.
 * **Demographic Split**: Validated **90.2% Adult** vs **9.8% Child** ratio.
