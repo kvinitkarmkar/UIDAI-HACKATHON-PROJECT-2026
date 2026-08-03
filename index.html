@@ -2,772 +2,418 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Aadhaar Demographic Update — UIDAI Data Hackathon 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aadhaar Demographic Intelligence — UIDAI Hackathon 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --ink:#0A1628;
-    --ink-2:#0F2038;
-    --panel:#0D1D34;
-    --panel-2:#122645;
-    --hairline:rgba(230,224,209,0.12);
-    --cream:#F4F1E8;
-    --cream-dim:#C9C2AC;
-    --saffron:#FF8F3D;
-    --saffron-deep:#E5701A;
-    --teal:#3ED6C0;
-    --teal-deep:#1F9E8E;
-    --leaf:#6FBE72;
-    --rose:#E56A6A;
-    --gold:#E8B84B;
-    --radius:14px;
+    --bg:#FAFAF9;
+    --surface:#FFFFFF;
+    --border:#E7E4DC;
+    --ink:#1C1D22;
+    --muted:#6B6E76;
+    --navy:#1E3350;
+    --navy-soft:#4A6285;
+    --gold:#9C7A3C;
+    --brick:#A6412B;
+    --brick-soft:#C97A65;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
   body{
-    background:var(--ink);
-    color:var(--cream);
+    background:var(--bg);
+    color:var(--ink);
     font-family:'Inter',sans-serif;
-    line-height:1.6;
-    overflow-x:hidden;
-    font-size:16px;
+    -webkit-font-smoothing:antialiased;
   }
-  ::selection{background:var(--saffron); color:var(--ink);}
-  img,svg{max-width:100%; display:block;}
+  .serif{ font-family:'Fraunces',serif; }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
 
-  h1,h2,h3,h4{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
-  .mono{font-family:'JetBrains Mono',monospace;}
-  a{color:var(--teal);}
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
 
-  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
-
-  /* ---------- progress + nav ---------- */
-  #progress{position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--saffron),var(--teal)); z-index:200; width:0%;}
-
-  .dotnav{position:fixed; right:26px; top:50%; transform:translateY(-50%); z-index:150; display:flex; flex-direction:column; gap:14px;}
-  .dotnav a{width:8px; height:8px; border-radius:50%; background:rgba(244,241,232,0.22); display:block; position:relative; transition:.3s;}
-  .dotnav a.active{background:var(--saffron); box-shadow:0 0 0 4px rgba(255,143,61,0.18);}
-  .dotnav a span{position:absolute; right:18px; top:50%; transform:translateY(-50%); white-space:nowrap; font-size:11px; letter-spacing:.06em; text-transform:uppercase; opacity:0; transition:.25s; pointer-events:none; color:var(--cream-dim); font-family:'JetBrains Mono',monospace;}
-  .dotnav a:hover span{opacity:1;}
-
-  /* ---------- texture ---------- */
-  .grain{position:fixed; inset:0; pointer-events:none; opacity:.035; z-index:1;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-
-  /* ---------- hero ---------- */
-  .hero{min-height:100vh; position:relative; display:flex; align-items:center; padding:150px 0 110px; overflow:hidden;}
-  .hero::before{content:''; position:absolute; top:-25%; right:-15%; width:55%; height:75%; background:radial-gradient(circle,rgba(255,143,61,0.16),transparent 65%); filter:blur(20px); z-index:0;}
-  .hero::after{content:''; position:absolute; bottom:-25%; left:-15%; width:45%; height:60%; background:radial-gradient(circle,rgba(62,214,192,0.12),transparent 65%); filter:blur(20px); z-index:0;}
-
-  .hero-inner{position:relative; z-index:2; display:grid; grid-template-columns:1.35fr 1fr; gap:64px; align-items:center;}
-  @media (max-width:980px){.hero-inner{grid-template-columns:1fr; gap:52px;}}
-
-  .hero-text{max-width:620px;}
-
-  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--saffron); border:1px solid rgba(255,143,61,0.35); padding:7px 14px; border-radius:100px; background:rgba(255,143,61,0.06);}
-  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--saffron); box-shadow:0 0 10px var(--saffron); flex-shrink:0;}
-
-  .hero h1{font-size:clamp(34px,5.6vw,72px); line-height:1.06; margin-top:24px; letter-spacing:-0.02em;}
-  .hero h1 em{font-style:italic; font-weight:300; color:var(--teal);}
-  .hero .lede{font-size:clamp(15px,1.8vw,17.5px); color:var(--cream-dim); margin-top:22px; max-width:520px;}
-
-  .hero-meta{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px 20px; margin-top:44px; padding-top:24px; border-top:1px solid var(--hairline);}
-  @media (max-width:980px){.hero-meta{grid-template-columns:repeat(2,minmax(0,1fr));}}
-  @media (max-width:420px){.hero-meta{grid-template-columns:1fr;}}
-  .hero-meta div{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--cream-dim); letter-spacing:.03em; line-height:1.5;}
-  .hero-meta strong{display:block; color:var(--cream); font-size:13.5px; margin-bottom:4px; font-weight:600; font-family:'Inter',sans-serif; letter-spacing:0;}
-
-  .hero-visual{display:flex; align-items:center; justify-content:center;}
-  .hero-stat-ring{position:relative; width:250px; height:250px; border-radius:50%; flex-shrink:0;
-    background:conic-gradient(var(--saffron) 0%, var(--teal) 77.1%, rgba(244,241,232,0.08) 77.1%);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);}
-  .hero-stat-ring::before{content:''; position:absolute; inset:16px; background:var(--panel); border-radius:50%; box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);}
-  .hero-stat-ring .ring-center{position:relative; text-align:center; z-index:1;}
-  .ring-center .big{font-family:'Fraunces',serif; font-size:36px; font-weight:600; color:var(--cream); line-height:1;}
-  .ring-center .small{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--saffron); letter-spacing:.08em; text-transform:uppercase; margin-top:6px;}
-  @media (max-width:980px){.hero-stat-ring{width:190px; height:190px;} .ring-center .big{font-size:28px;}}
-
-  .scroll-cue{position:absolute; bottom:36px; left:50%; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--cream-dim); letter-spacing:.14em; text-transform:uppercase;}
-  .scroll-cue .line{width:1px; height:30px; background:linear-gradient(var(--saffron),transparent); animation:pulseline 2s infinite;}
-  @keyframes pulseline{0%,100%{opacity:.25;}50%{opacity:1;}}
-  @media (max-width:640px){.scroll-cue{display:none;}}
-
-  /* ---------- section shell ---------- */
-  section{position:relative; padding:100px 0; z-index:2;}
-  .section-head{display:flex; align-items:baseline; gap:18px; margin-bottom:44px; flex-wrap:wrap;}
-  .section-num{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--saffron); border:1px solid rgba(255,143,61,.3); padding:3px 10px; border-radius:100px; flex-shrink:0;}
-  .section-head h2{font-size:clamp(26px,4vw,42px); color:var(--cream);}
-  .section-sub{color:var(--cream-dim); max-width:680px; font-size:15.5px; margin-bottom:40px; margin-top:-20px;}
-
-  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
-  .reveal.in{opacity:1; transform:translateY(0);}
-
-  /* ---------- grids ---------- */
-  .grid{display:grid; gap:20px;}
-  .g2{grid-template-columns:repeat(2,1fr);}
-  .g3{grid-template-columns:repeat(3,1fr);}
-  @media (max-width:820px){.g2,.g3{grid-template-columns:1fr;}}
-
-  .card{background:linear-gradient(180deg,var(--panel-2),var(--panel)); border:1px solid var(--hairline); border-radius:var(--radius); padding:26px; position:relative; overflow:hidden;}
-  .card:hover{border-color:rgba(255,143,61,.35);}
-  .card .k{font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--saffron); margin-bottom:10px; display:block;}
-  .card h4{font-size:18px; margin-bottom:8px; color:var(--cream);}
-  .card p{font-size:14.5px; color:var(--cream-dim);}
-
-  .obj-list{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:12px 28px;}
-  @media (max-width:700px){.obj-list{grid-template-columns:1fr;}}
-  .obj-list li{display:flex; gap:12px; align-items:flex-start; font-size:14.5px; color:var(--cream-dim); padding:10px 0; border-bottom:1px dashed var(--hairline);}
-  .obj-list li::before{content:'→'; color:var(--teal); font-weight:700; flex-shrink:0;}
-
-  .stack-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;}
-  .chip{font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 14px; border:1px solid var(--hairline); border-radius:100px; color:var(--cream-dim); background:rgba(244,241,232,0.02);}
-
-  /* ---------- tech marquee ---------- */
-  .tech-marquee{overflow:hidden; margin-top:16px; width:100%;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);}
-  .tech-track{display:flex; gap:14px; width:max-content; animation:marquee 26s linear infinite;}
-  .tech-marquee:hover .tech-track{animation-play-state:paused;}
-  @keyframes marquee{from{transform:translateX(0);} to{transform:translateX(-50%);}}
-  .tech-item{display:flex; align-items:center; gap:10px; padding:8px 18px 8px 8px; border:1px solid var(--hairline); border-radius:100px; background:rgba(244,241,232,0.02); flex-shrink:0;}
-  .tech-icon{width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:#0A1628; flex-shrink:0;}
-  .tech-item span{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--cream-dim); white-space:nowrap;}
-
-  /* ---------- taxonomy ---------- */
-  .taxo{border-left:2px solid var(--hairline); padding-left:22px; margin-left:6px;}
-  .taxo .item{margin-bottom:24px; position:relative;}
-  .taxo .item::before{content:''; position:absolute; left:-27.5px; top:6px; width:9px; height:9px; border-radius:50%; background:var(--ink); border:2px solid var(--teal);}
-  .taxo .item h4{font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--teal); margin-bottom:8px; font-family:'JetBrains Mono',monospace; font-weight:500;}
-  .taxo .item p{color:var(--cream-dim); font-size:14px;}
-  .taxo .item code{background:rgba(255,143,61,.1); color:var(--saffron); padding:1px 7px; border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:12.5px; word-break:break-word;}
-
-  /* ---------- cleaning table ---------- */
-  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:var(--radius);}
-  .clean-table{width:100%; border-collapse:collapse; margin-top:8px; min-width:560px;}
-  .clean-table th{text-align:left; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--cream-dim); padding:14px 16px; border-bottom:1px solid var(--hairline); white-space:nowrap;}
-  .clean-table td{padding:16px; border-bottom:1px solid var(--hairline); font-size:14.5px; white-space:nowrap;}
-  .clean-table tr:hover td{background:rgba(244,241,232,0.02);}
-  .clean-table .metric{color:var(--cream); font-weight:600;}
-  .clean-table .pre{color:var(--cream-dim); font-family:'JetBrains Mono',monospace;}
-  .clean-table .post{color:var(--teal); font-family:'JetBrains Mono',monospace; font-weight:600;}
-  .clean-table .delta{font-family:'JetBrains Mono',monospace; font-size:13px;}
-  .delta.down{color:var(--rose);}
-  .delta.up{color:var(--leaf);}
-
-  /* ---------- chart panel shell ---------- */
-  .chart-panel{background:linear-gradient(180deg,var(--panel-2),var(--panel)); border:1px solid var(--hairline); border-radius:var(--radius); padding:28px;}
-  @media (max-width:600px){.chart-panel{padding:20px 16px;}}
-  .chart-panel .chead{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:24px; flex-wrap:wrap; gap:8px;}
-  .chart-panel .chead h4{font-size:16px; color:var(--cream); font-family:'Fraunces',serif;}
-  .chart-panel .chead span{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--cream-dim); text-transform:uppercase; letter-spacing:.06em;}
-
-  /* ---------- css bar chart component ---------- */
-  .barchart .bar-row{display:grid; grid-template-columns:150px 1fr 92px; align-items:center; gap:14px; margin-bottom:16px;}
-  .barchart .bar-row:last-child{margin-bottom:0;}
-  .bar-label{font-size:12.5px; color:var(--cream-dim); font-family:'JetBrains Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .bar-track{height:14px; background:rgba(244,241,232,0.06); border-radius:8px; overflow:hidden;}
-  .bar-fill{height:100%; border-radius:8px; width:0%; transition:width 1.3s cubic-bezier(.2,.8,.2,1);}
-  .bar-value{font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--cream); text-align:right; white-space:nowrap;}
-  .barchart.in .bar-fill{width:var(--w);}
-  @media (max-width:640px){
-    .barchart .bar-row{grid-template-columns:1fr; gap:6px;}
-    .bar-value{text-align:left; color:var(--cream-dim);}
-    .bar-label{white-space:normal; color:var(--cream);}
+  /* ===== Header ===== */
+  header{ border-bottom:1px solid var(--border); padding:28px 0 22px; }
+  .eyebrow{
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--gold); font-weight:600; margin-bottom:10px;
   }
+  header h1{ font-size:clamp(24px,3.2vw,34px); font-weight:500; letter-spacing:-0.01em; }
+  header .sub{ color:var(--muted); font-size:13.5px; margin-top:6px; max-width:640px; line-height:1.5; }
+  .meta-row{ display:flex; gap:24px; margin-top:16px; flex-wrap:wrap; }
+  .meta-item{ font-size:11.5px; color:var(--muted); }
+  .meta-item b{ color:var(--ink); font-weight:600; }
 
-  /* ---------- css donut chart component ---------- */
-  .donut-wrap{display:flex; flex-direction:column; align-items:center; gap:22px;}
-  .donut{width:210px; height:210px; border-radius:50%; position:relative; flex-shrink:0;}
-  .donut::before{content:''; position:absolute; inset:24%; background:var(--panel); border-radius:50%;}
-  .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
-  .donut-center .big{font-family:'Fraunces',serif; font-size:26px; font-weight:600; color:var(--cream);}
-  .donut-center .small{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--cream-dim); text-transform:uppercase; letter-spacing:.06em; margin-top:2px;}
-  .legend{display:flex; flex-direction:column; gap:12px; width:100%; max-width:280px;}
-  .legend .row{display:flex; justify-content:space-between; align-items:center; font-size:13px; font-family:'JetBrains Mono',monospace;}
-  .legend .row .name{display:flex; align-items:center; gap:8px; color:var(--cream-dim);}
-  .legend .row .sw{width:10px; height:10px; border-radius:3px; flex-shrink:0;}
-  .legend .row .val{color:var(--cream); font-weight:600;}
+  /* ===== Hero stat strip ===== */
+  .hero-strip{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    border-bottom:1px solid var(--border);
+  }
+  .hero-stat{
+    padding:26px 28px; border-right:1px solid var(--border);
+  }
+  .hero-stat:last-child{ border-right:none; }
+  .hero-stat .label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+  .hero-stat .value{ font-size:clamp(22px,2.6vw,30px); font-weight:600; letter-spacing:-0.01em; }
+  .hero-stat .value.brick{ color:var(--brick); }
+  .hero-stat .value.navy{ color:var(--navy); }
+  .hero-stat .foot{ font-size:11.5px; color:var(--muted); margin-top:8px; }
 
-  /* ---------- insight bullets ---------- */
-  .insight-bullets{display:flex; flex-direction:column; gap:16px;}
-  .insight-bullets .b{padding-left:18px; border-left:2px solid var(--saffron);}
-  .insight-bullets .b strong{color:var(--cream); display:block; margin-bottom:3px; font-size:14.5px;}
-  .insight-bullets .b p{color:var(--cream-dim); font-size:13.5px;}
+  /* ===== Section ===== */
+  section{ padding:40px 0; border-bottom:1px solid var(--border); }
+  .section-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:22px; flex-wrap:wrap; gap:8px;}
+  .section-head h2{ font-size:19px; font-weight:500; }
+  .section-head .note{ font-size:12px; color:var(--muted); }
 
-  /* ---------- policy strategy cards ---------- */
-  .strategy{border-radius:var(--radius); padding:26px; border:1px solid var(--hairline); position:relative;}
-  .strategy.a{background:linear-gradient(160deg,rgba(255,143,61,.09),var(--panel));}
-  .strategy.b{background:linear-gradient(160deg,rgba(62,214,192,.09),var(--panel));}
-  .strategy .tag{font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; padding:4px 10px; border-radius:100px; display:inline-block; margin-bottom:14px;}
-  .strategy.a .tag{color:var(--saffron); background:rgba(255,143,61,.14);}
-  .strategy.b .tag{color:var(--teal); background:rgba(62,214,192,.14);}
-  .strategy h4{font-size:19px; margin-bottom:6px;}
-  .strategy .target{color:var(--cream-dim); font-size:13px; margin-bottom:16px; font-family:'JetBrains Mono',monospace;}
-  .strategy ul{list-style:none; margin-top:10px;}
-  .strategy ul li{font-size:14px; color:var(--cream-dim); padding:6px 0 6px 18px; position:relative;}
-  .strategy ul li::before{content:'▸'; position:absolute; left:0; color:var(--saffron);}
-  .strategy.b ul li::before{color:var(--teal);}
+  .grid-2{ display:grid; grid-template-columns:1.3fr 1fr; gap:32px; }
+  .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1px solid var(--border); }
 
-  /* ---------- alert banner ---------- */
-  .alert-banner{background:linear-gradient(90deg,rgba(229,106,106,.14),rgba(229,106,106,.02)); border:1px solid rgba(229,106,106,.4); border-radius:var(--radius); padding:18px 24px; display:flex; align-items:center; gap:16px; margin-bottom:40px; flex-wrap:wrap;}
-  .alert-banner .pulse{width:12px; height:12px; border-radius:50%; background:var(--rose); flex-shrink:0; box-shadow:0 0 0 0 rgba(229,106,106,.6); animation:pulse 1.8s infinite;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,106,106,.5);}70%{box-shadow:0 0 0 12px rgba(229,106,106,0);}100%{box-shadow:0 0 0 0 rgba(229,106,106,0);}}
-  .alert-banner .txt{font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:.03em; color:var(--cream);}
-  .alert-banner .txt b{color:var(--rose);}
+  .panel{ border:1px solid var(--border); background:var(--surface); padding:22px; border-radius:2px; }
+  .panel-title{ font-size:13px; font-weight:600; margin-bottom:16px; display:flex; justify-content:space-between; }
+  .panel-title .tag{ font-size:11px; color:var(--muted); font-weight:400; }
 
-  .evidence-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:32px;}
-  @media (max-width:820px){.evidence-stats{grid-template-columns:repeat(2,1fr);}}
-  @media (max-width:480px){.evidence-stats{grid-template-columns:1fr;}}
-  .evidence-stats .e{padding:18px; border:1px solid var(--hairline); border-radius:12px; text-align:left;}
-  .evidence-stats .e .n{font-family:'Fraunces',serif; font-size:28px; color:var(--saffron); font-weight:600;}
-  .evidence-stats .e .l{font-size:12.5px; color:var(--cream-dim); margin-top:4px;}
+  .chart-box{ height:280px; }
+  .chart-box.tall{ height:340px; }
 
-  /* ---------- roadmap timeline ---------- */
-  .roadmap{position:relative; padding-left:32px; margin-top:10px;}
-  .roadmap::before{content:''; position:absolute; left:9px; top:6px; bottom:6px; width:2px; background:linear-gradient(var(--saffron),var(--teal),var(--leaf));}
-  .phase{position:relative; margin-bottom:40px;}
-  .phase::before{content:''; position:absolute; left:-32px; top:4px; width:20px; height:20px; border-radius:50%; background:var(--ink); border:2px solid var(--saffron);}
-  .phase:nth-child(2)::before{border-color:var(--teal);}
-  .phase:nth-child(3)::before{border-color:var(--leaf);}
-  .phase .ph-head{display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; margin-bottom:10px;}
-  .phase h4{font-size:19px; color:var(--cream);}
-  .phase .window{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--saffron); border:1px solid rgba(255,143,61,.3); padding:3px 10px; border-radius:100px;}
-  .phase ul{list-style:none; margin:12px 0;}
-  .phase ul li{font-size:14px; color:var(--cream-dim); padding:5px 0 5px 18px; position:relative;}
-  .phase ul li::before{content:'—'; position:absolute; left:0; color:var(--teal);}
-  .phase .metrics{display:flex; gap:24px; margin-top:12px; flex-wrap:wrap;}
-  .phase .metrics div{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cream-dim);}
-  .phase .metrics strong{color:var(--cream); display:block; font-size:16px; font-family:'Fraunces',serif;}
+  /* ===== Cleaning impact (signature element) ===== */
+  .impact-block{ display:flex; align-items:center; gap:28px; }
+  .ring{
+    width:132px; height:132px; border-radius:50%;
+    background:conic-gradient(var(--navy) 0% 77.1%, var(--brick-soft) 77.1% 100%);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    position:relative;
+  }
+  .ring::before{
+    content:''; position:absolute; width:100px; height:100px; border-radius:50%;
+    background:var(--surface);
+  }
+  .ring .ring-num{ position:relative; font-size:22px; font-weight:600; z-index:1; }
+  .impact-legend{ font-size:12.5px; line-height:2; }
+  .dot{ width:8px; height:8px; display:inline-block; border-radius:50%; margin-right:8px; }
 
-  /* ---------- final section ---------- */
-  .finale{background:radial-gradient(circle at 30% 20%,rgba(255,143,61,.08),transparent 60%), var(--ink-2); border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline);}
-  .finale-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:52px; align-items:center;}
-  @media (max-width:900px){.finale-grid{grid-template-columns:1fr;}}
-  .finale h2{font-size:clamp(28px,4vw,44px); margin-bottom:18px;}
-  .finale p{color:var(--cream-dim); font-size:15.5px; margin-bottom:14px;}
-  .quote{border-left:2px solid var(--saffron); padding-left:20px; margin-top:24px; font-family:'Fraunces',serif; font-style:italic; font-size:18px; color:var(--cream);}
-  .quote span{display:block; font-family:'JetBrains Mono',monospace; font-style:normal; font-size:12px; color:var(--cream-dim); margin-top:8px; text-transform:uppercase; letter-spacing:.06em;}
+  /* ===== Table ===== */
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th{ text-align:left; color:var(--muted); font-weight:500; font-size:11px; text-transform:uppercase; letter-spacing:.05em; padding:0 10px 10px; border-bottom:1px solid var(--border); }
+  td{ padding:11px 10px; border-bottom:1px solid var(--border); }
+  tr:last-child td{ border-bottom:none; }
+  td.num, th.num{ text-align:right; font-family:'IBM Plex Mono',monospace; }
+  .priority-badge{
+    display:inline-block; width:22px; height:22px; line-height:22px; text-align:center;
+    font-size:11px; font-weight:600; border-radius:50%; background:var(--brick); color:#fff;
+  }
+  .priority-badge.low{ background:var(--gold); }
 
-  .impact-stats{display:flex; flex-direction:column; gap:0;}
-  .impact-stats .row{display:flex; justify-content:space-between; align-items:center; padding:18px 0; border-bottom:1px solid var(--hairline); gap:16px;}
-  .impact-stats .row:last-child{border-bottom:none;}
-  .impact-stats .num{font-family:'Fraunces',serif; font-size:30px; color:var(--teal); font-weight:600; flex-shrink:0;}
-  .impact-stats .lab{font-size:12.5px; color:var(--cream-dim); text-align:right; max-width:180px;}
+  /* ===== Rupee strip ===== */
+  .rupee-strip{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--border); }
+  .rupee-item{ padding:20px 22px; border-right:1px solid var(--border); }
+  .rupee-item:last-child{ border-right:none; }
+  .rupee-item .amt{ font-size:20px; font-weight:600; color:var(--navy); }
+  .rupee-item .amt.pos{ color:var(--gold); }
+  .rupee-item .desc{ font-size:11.5px; color:var(--muted); margin-top:6px; line-height:1.4; }
 
-  .cta-list{display:flex; flex-direction:column; gap:0; margin-top:24px;}
-  .cta-list .r{display:flex; gap:14px; padding:12px 0; border-bottom:1px dashed var(--hairline); font-size:14px; color:var(--cream-dim);}
-  .cta-list .r b{color:var(--saffron); font-family:'JetBrains Mono',monospace; font-size:12.5px; flex-shrink:0;}
+  /* ===== Recommendations ===== */
+  .phase-list{ display:flex; flex-direction:column; gap:0; }
+  .phase-row{ display:grid; grid-template-columns:140px 1fr 140px; gap:20px; padding:16px 0; border-bottom:1px solid var(--border); align-items:start; }
+  .phase-row:last-child{ border-bottom:none; }
+  .phase-name{ font-size:12.5px; font-weight:600; color:var(--navy); }
+  .phase-desc{ font-size:13px; color:var(--ink); line-height:1.5; }
+  .phase-desc ul{ padding-left:16px; margin-top:4px; color:var(--muted); font-size:12.5px; }
+  .phase-invest{ font-size:12px; text-align:right; color:var(--muted); }
+  .phase-invest b{ display:block; color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:13px; }
 
-  /* ---------- footer ---------- */
-  footer{padding:60px 0 50px;}
-  .foot-grid{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px; border-top:1px solid var(--hairline); padding-top:32px;}
-  .foot-grid .l{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cream-dim);}
-  .foot-grid .l strong{display:block; color:var(--cream); font-family:'Fraunces',serif; font-size:20px; margin-bottom:6px; font-weight:600;}
+  footer{ padding:26px 0 40px; text-align:center; color:var(--muted); font-size:11.5px; }
 
-  .badge-row{display:flex; gap:10px; flex-wrap:wrap;}
-  .badge-row a{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--ink); background:var(--teal); padding:9px 16px; border-radius:100px; text-decoration:none; font-weight:600; transition:.2s;}
-  .badge-row a:hover{background:var(--saffron);}
-
-  ::-webkit-scrollbar{width:8px;}
-  ::-webkit-scrollbar-track{background:var(--ink);}
-  ::-webkit-scrollbar-thumb{background:var(--panel-2); border-radius:10px;}
-
-  /* ---------- global mobile tuning ---------- */
+  /* ===== Responsive ===== */
   @media (max-width:900px){
-    .dotnav{display:none;}
+    .grid-2{ grid-template-columns:1fr; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+    .hero-stat:nth-child(2){ border-right:none; }
+    .hero-stat{ border-bottom:1px solid var(--border); }
+    .rupee-strip{ grid-template-columns:repeat(2,1fr); }
+    .rupee-item:nth-child(2){ border-right:none; }
+    .rupee-item{ border-bottom:1px solid var(--border); }
   }
-  @media (max-width:768px){
-    .wrap{padding:0 20px;}
-    section{padding:72px 0;}
-    .hero{padding:100px 0 50px;}
-    .section-sub{margin-top:-10px;}
-  }
-  @media (max-width:480px){
-    body{font-size:15px;}
-    .wrap{padding:0 16px;}
-    .hero-meta{gap:18px 24px;}
-    .card{padding:20px;}
+  @media (max-width:640px){
+    .wrap{ padding:0 18px; }
+    .hero-strip{ grid-template-columns:1fr 1fr; }
+    .impact-block{ flex-direction:column; align-items:flex-start; gap:16px; }
+    .phase-row{ grid-template-columns:1fr; gap:6px; }
+    .phase-invest{ text-align:left; }
+    .rupee-strip{ grid-template-columns:1fr 1fr; }
+    th:nth-child(3), td:nth-child(3){ display:none; }
   }
 </style>
 </head>
 <body>
 
-<div id="progress"></div>
-<div class="grain"></div>
-
-<nav class="dotnav" id="dotnav">
-  <a href="#hero"><span>Hero</span></a>
-  <a href="#intro"><span>Introduction</span></a>
-  <a href="#dataflaw"><span>Data Quality</span></a>
-  <a href="#cleaning"><span>Cleaning Impact</span></a>
-  <a href="#insights"><span>Data Insights</span></a>
-  <a href="#policy"><span>Policy Brief</span></a>
-  <a href="#zones"><span>Duplication Zones</span></a>
-  <a href="#roadmap"><span>Roadmap</span></a>
-  <a href="#conclusion"><span>Conclusion</span></a>
-</nav>
-
-<!-- ================= HERO ================= -->
-<header class="hero" id="hero">
-  <div class="wrap hero-inner">
-    <div class="hero-text">
-      <div class="eyebrow"><span class="dot"></span> UIDAI Data Hackathon 2026</div>
-      <h1>Aadhaar, read<br>as a <em>living</em><br>population ledger.</h1>
-      <p class="lede">A district-level forensic audit of the Aadhaar Demographic Update dataset — 2.07 million raw records, 65 malformed geographies, and one clear roadmap to a cleaner, fairer database.</p>
-
-      <div class="hero-meta">
-        <div><strong>Vinit Kumar Karmakr</strong>Submitted by · Team UIDAI_5216</div>
-        <div><strong>20 January 2026</strong>Submission date</div>
-        <div><strong>data.gov.in</strong>Dataset source</div>
-        <div><strong>Non‑Commercial R&amp;D</strong>Usage classification</div>
-      </div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">UIDAI Data Hackathon 2026 — Team UIDAI_5216</div>
+    <h1 class="serif">Aadhaar Demographic Intelligence</h1>
+    <div class="sub">District-wise analysis of the Aadhaar Demographic Update dataset — data quality, regional distribution, and governance recommendations.</div>
+    <div class="meta-row">
+      <div class="meta-item">Source: <b>data.gov.in</b></div>
+      <div class="meta-item">Records processed: <b>2,071,700</b></div>
+      <div class="meta-item">Coverage: <b>28 States + 8 UTs</b></div>
+      <div class="meta-item">Prepared: <b>20 Jan 2026</b></div>
     </div>
+  </header>
 
-    <div class="hero-visual">
-      <div class="hero-stat-ring">
-        <div class="ring-center">
-          <div class="big">36.6M</div>
-          <div class="small">Verified Records</div>
-        </div>
-      </div>
+  <div class="hero-strip">
+    <div class="hero-stat">
+      <div class="label">Clean Unique Records</div>
+      <div class="value navy mono">36.6M</div>
+      <div class="foot">of 49.3M raw (−25.8%)</div>
+    </div>
+    <div class="hero-stat">
+      <div class="label">Duplicates Removed</div>
+      <div class="value brick mono">474,307</div>
+      <div class="foot">22.89% of raw dataset</div>
+    </div>
+    <div class="hero-stat">
+      <div class="label">Entities Normalized</div>
+      <div class="value mono">65 → 36</div>
+      <div class="foot">matches 28 states + 8 UTs</div>
+    </div>
+    <div class="hero-stat">
+      <div class="label">Youth-to-Child Ratio</div>
+      <div class="value mono">9.17 : 1</div>
+      <div class="foot">post-cleaning, consistent</div>
     </div>
   </div>
 
-  <div class="scroll-cue"><div class="line"></div>Scroll to audit</div>
-</header>
-
-<main class="wrap">
-
-  <!-- ================= INTRODUCTION ================= -->
-  <section id="intro">
-    <div class="section-head reveal"><span class="section-num">01</span><h2>Introduction</h2></div>
-    <p class="section-sub reveal">Aadhaar is one of the largest digital identity systems in the world. Open demographic update datasets published by UIDAI make it possible to study population-level trends, regional variation, and update behaviour — this project turns that opportunity into a district-wise strategy for governance.</p>
-
-    <div class="grid g2">
-      <div class="card reveal">
-        <span class="k">Objectives of the study</span>
-        <ul class="obj-list">
-          <li>District-level Aadhaar update trends</li>
-          <li>Age-group wise update patterns</li>
-          <li>High vs. low update districts</li>
-          <li>Demographic update spikes</li>
-          <li>Youth volume vs. total population</li>
-          <li>Data integrity &amp; anomaly detection</li>
-          <li>Strategy for lagging states</li>
-          <li>Urban youth vs. rural youth flow</li>
-          <li>Urban states vs. rural states</li>
-          <li>Data-driven governance insight</li>
-        </ul>
-      </div>
-      <div class="card reveal">
-        <span class="k">Tools &amp; technologies</span>
-        <h4>The analysis stack</h4>
-        <p>A standard, reproducible Python data-science pipeline — built for auditability rather than novelty.</p>
-        <div class="tech-marquee">
-          <div class="tech-track" id="techTrack">
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#FFD43B,#3776AB);">Py</div><span>Python 3.12.8</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#4DABCF,#013243);">Np</div><span>NumPy</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#E8B84B,#8C5A2B);">Pd</div><span>Pandas</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#F37726,#D96B0C);">Jy</div><span>Jupyter Notebook</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#3ED6C0,#1F9E8E);">Mp</div><span>Matplotlib</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#6FBE72,#2E7D46);">Sb</div><span>Seaborn</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#7FA7D6,#1D4E89);">VS</div><span>VS Code</span></div>
-            <div class="tech-item"><div class="tech-icon" style="background:linear-gradient(135deg,#E56A6A,#8A3FFC);">Cv</div><span>Canva</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#FFD43B,#3776AB);">Py</div><span>Python 3.12.8</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#4DABCF,#013243);">Np</div><span>NumPy</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#E8B84B,#8C5A2B);">Pd</div><span>Pandas</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#F37726,#D96B0C);">Jy</div><span>Jupyter Notebook</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#3ED6C0,#1F9E8E);">Mp</div><span>Matplotlib</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#6FBE72,#2E7D46);">Sb</div><span>Seaborn</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#7FA7D6,#1D4E89);">VS</div><span>VS Code</span></div>
-            <div class="tech-item" aria-hidden="true"><div class="tech-icon" style="background:linear-gradient(135deg,#E56A6A,#8A3FFC);">Cv</div><span>Canva</span></div>
+  <!-- Data Quality -->
+  <section>
+    <div class="section-head">
+      <h2 class="serif">Data Quality — Before vs After Cleaning</h2>
+      <div class="note">exact row-level deduplication, 6 attributes</div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Cleaning impact<span class="tag">retained vs removed</span></div>
+        <div class="impact-block">
+          <div class="ring"><div class="ring-num mono">77.1%</div></div>
+          <div class="impact-legend">
+            <div><span class="dot" style="background:var(--navy)"></span>Unique records retained — 1,597,393</div>
+            <div><span class="dot" style="background:var(--brick-soft)"></span>Duplicates removed — 474,307</div>
+            <div style="margin-top:10px; color:var(--muted); font-size:11.5px; line-height:1.5;">Root causes: case/phonetic variation (e.g. "West Bengal" vs "WESTBENGAL"), renamed states (Uttaranchal → Uttarakhand), and city-level noise ('Nagpur', 'Jaipur') entered in the State field.</div>
           </div>
         </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Metric comparison<span class="tag">pre → post</span></div>
+        <table>
+          <thead><tr><th>Metric</th><th class="num">Pre</th><th class="num">Post</th></tr></thead>
+          <tbody>
+            <tr><td>Population count</td><td class="num">49,295,187</td><td class="num">36,596,428</td></tr>
+            <tr><td>Child count</td><td class="num">4,863,424</td><td class="num">3,597,705</td></tr>
+            <tr><td>Youth count</td><td class="num">44,431,763</td><td class="num">32,998,723</td></tr>
+            <tr><td>Unique entities</td><td class="num">65</td><td class="num">36</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
 
-  <!-- ================= DATA QUALITY / STATE FLAW ================= -->
-  <section id="dataflaw">
-    <div class="section-head reveal"><span class="section-num">02</span><h2>The "State" dimension flaw</h2></div>
-    <p class="section-sub reveal">India consists of 28 states and 8 union territories. The raw dataset arrived with <strong style="color:var(--cream)">65 unique state-level entries</strong> — a high-cardinality mess of case errors, spelling drift, renamed states, and outright noise that had to be reconciled before any statistic could be trusted.</p>
-
-    <div class="grid g2" style="align-items:start;">
-      <div class="taxo reveal">
-        <div class="item">
-          <h4>A · Case &amp; phonetic variation</h4>
-          <p><code>West Bengal</code> · <code>WEST BENGAL</code> · <code>west Bengal</code> · <code>Westbengal</code> · <code>West Bangal</code> — and <code>Odisha</code> vs. <code>ODISHA</code> vs. the archaic <code>Orissa</code>.</p>
-        </div>
-        <div class="item">
-          <h4>B · Syntactic &amp; whitespace noise</h4>
-          <p>Double-spaced entries like <code>West  Bengal</code>, and delimiter drift between <code>Dadra &amp; Nagar Haveli</code> and <code>Dadra and Nagar Haveli</code>.</p>
-        </div>
-        <div class="item">
-          <h4>C · Temporal &amp; administrative outliers</h4>
-          <p>Legacy names <code>Uttaranchal</code> and <code>Pondicherry</code> persist alongside their current forms; Jammu &amp; Kashmir still appears as a state despite its UT reclassification.</p>
-        </div>
-        <div class="item">
-          <h4>D · Extraneous, non-categorical noise</h4>
-          <p>City-level leakage — <code>Nagpur</code>, <code>Jaipur</code>, <code>Darbhanga</code>, <code>Balanagar</code> — plus stray numeric strings like <code>100000</code> sitting inside the state field.</p>
-        </div>
+  <!-- Age distribution + Regional -->
+  <section>
+    <div class="section-head">
+      <h2 class="serif">Demographic & Regional Split</h2>
+      <div class="note">post-cleaning figures</div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Age group distribution<span class="tag">children vs adults</span></div>
+        <div class="chart-box"><canvas id="ageChart"></canvas></div>
       </div>
-
-      <div class="chart-panel reveal">
-        <div class="chead"><h4>Entity cardinality, before → after</h4><span>Reconciliation</span></div>
-        <div class="barchart">
-          <div class="bar-row">
-            <span class="bar-label">Raw entities</span>
-            <div class="bar-track"><div class="bar-fill" style="--w:100%; background:linear-gradient(90deg,var(--rose),var(--saffron-deep));"></div></div>
-            <span class="bar-value">65</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Reconciled entities</span>
-            <div class="bar-track"><div class="bar-fill" style="--w:55.4%; background:linear-gradient(90deg,var(--teal-deep),var(--teal));"></div></div>
-            <span class="bar-value">36</span>
-          </div>
-        </div>
-        <p style="margin-top:22px; font-size:13px; color:var(--cream-dim);">28 states + 8 union territories reconstructed from 65 noisy raw labels — a 44.6% reduction in false cardinality.</p>
+      <div class="panel">
+        <div class="panel-title">Regional distribution<span class="tag">total updates</span></div>
+        <div class="chart-box"><canvas id="regionChart"></canvas></div>
       </div>
     </div>
   </section>
 
-  <!-- ================= CLEANING IMPACT ================= -->
-  <section id="cleaning">
-    <div class="section-head reveal"><span class="section-num">03</span><h2>Cleaning impact</h2></div>
-    <p class="section-sub reveal">Exact row-level matching across all six demographic attributes — date, state, district, pincode, and both age fields — surfaced <strong style="color:var(--cream)">474,307 genuine duplicate rows</strong>, 22.89% of the raw dataset. The deduplication pipeline preserved first occurrence and produced 1,597,393 trustworthy records.</p>
+  <!-- Top states / districts -->
+  <section>
+    <div class="section-head">
+      <h2 class="serif">Where the Demand Is</h2>
+      <div class="note">cumulative update volume</div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Top 10 states<span class="tag">cumulative updates</span></div>
+        <div class="chart-box tall"><canvas id="stateChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Top 10 districts<span class="tag">cumulative updates</span></div>
+        <div class="chart-box tall"><canvas id="districtChart"></canvas></div>
+      </div>
+    </div>
+  </section>
 
-    <div class="chart-panel reveal">
-      <div class="chead"><h4>Pre‑cleaning vs. post‑cleaning metrics</h4><span>36 reconciled geographies</span></div>
-      <div class="table-scroll">
-      <table class="clean-table">
-        <thead><tr><th>Metric</th><th>Pre‑cleaning</th><th>Post‑cleaning</th><th>Delta / impact</th></tr></thead>
-        <tbody>
-          <tr><td class="metric">Unique entities</td><td class="pre">65</td><td class="post">36 <span style="color:var(--cream-dim); font-family:'Inter'">(28+8 UTs)</span></td><td class="delta down">−29 · 44.6%</td></tr>
-          <tr><td class="metric">Total population</td><td class="pre">49,295,187</td><td class="post">36,596,428</td><td class="delta down">−12,698,759 · −25.8%</td></tr>
-          <tr><td class="metric">Total child count</td><td class="pre">4,863,424 (9.87%)</td><td class="post">3,597,705 (9.83%)</td><td class="delta down">−1,265,719 · −26.0%</td></tr>
-          <tr><td class="metric">Total youth count</td><td class="pre">44,431,763 (90.13%)</td><td class="post">32,998,723 (90.17%)</td><td class="delta down">−11,433,040 · −25.7%</td></tr>
-          <tr><td class="metric">Youth-to-child ratio</td><td class="pre">9.14 : 1</td><td class="post">9.17 : 1</td><td class="delta up">Stable</td></tr>
-          <tr><td class="metric">Raw row count</td><td class="pre">2,071,700</td><td class="post">1,597,393</td><td class="delta down">474,307 rows · 22.89%</td></tr>
-        </tbody>
+  <!-- Duplication hotspots -->
+  <section>
+    <div class="section-head">
+      <h2 class="serif">High-Duplication Districts</h2>
+      <div class="note">infrastructure upgrade priority</div>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Priority</th><th>State — District</th><th class="num">Duplicate Entries</th></tr></thead>
+        <tbody id="dupTable"></tbody>
       </table>
-      </div>
-    </div>
-
-    <div class="grid g3" style="margin-top:24px;">
-      <div class="card reveal"><span class="k">Methodology</span><h4>Row-level exact matching</h4><p>Deduplication across date, state, district, pincode, and both age distributions — a systematic pipeline that retains the first occurrence of every unique record.</p></div>
-      <div class="card reveal"><span class="k">Impact</span><h4>True population revealed</h4><p>Correcting the inflated 49.3M figure to a validated 36.6M, with demographic ratios remaining internally consistent after cleaning.</p></div>
-      <div class="card reveal"><span class="k">Technical achievement</span><h4>65 → 36 geographies</h4><p>Entity count now matches India's actual administrative structure — 28 states and 8 union territories, fully geo-validated.</p></div>
     </div>
   </section>
 
-  <!-- ================= PROBLEM STATEMENT DONUT ================= -->
-  <section id="problem">
-    <div class="section-head reveal"><span class="section-num">04</span><h2>Problem statement</h2></div>
-    <div class="grid g2" style="align-items:center;">
-      <div class="chart-panel reveal">
-        <div class="chead"><h4>Duplicate vs. unique records</h4><span>1,597,393 unique · 474,307 duplicate</span></div>
-        <div class="donut-wrap">
-          <div class="donut" style="background:conic-gradient(var(--teal) 0% 77.11%, var(--rose) 77.11% 100%);">
-            <div class="donut-center"><div class="big">22.9%</div><div class="small">Duplicated</div></div>
-          </div>
-          <div class="legend">
-            <div class="row"><span class="name"><span class="sw" style="background:var(--teal);"></span>Unique records</span><span class="val">77.11%</span></div>
-            <div class="row"><span class="name"><span class="sw" style="background:var(--rose);"></span>Duplicates</span><span class="val">22.89%</span></div>
-          </div>
+  <!-- Economic impact -->
+  <section>
+    <div class="section-head">
+      <h2 class="serif">Economic Impact</h2>
+      <div class="note">₹ figures, estimated</div>
+    </div>
+    <div class="rupee-strip">
+      <div class="rupee-item">
+        <div class="amt mono">₹4.7 Cr</div>
+        <div class="desc">wasted in redundant processing of duplicate records</div>
+      </div>
+      <div class="rupee-item">
+        <div class="amt mono pos">₹500+ Cr</div>
+        <div class="desc">potential savings from duplicate prevention</div>
+      </div>
+      <div class="rupee-item">
+        <div class="amt mono pos">₹1,000+ Cr</div>
+        <div class="desc">savings via accurate DBT (Direct Benefit Transfer) targeting</div>
+      </div>
+      <div class="rupee-item">
+        <div class="amt mono">₹265 Cr</div>
+        <div class="desc">proposed investment → ₹1,500+ Cr efficiency gains</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recommendations -->
+  <section style="border-bottom:none;">
+    <div class="section-head">
+      <h2 class="serif">Recommended Action Plan</h2>
+      <div class="note">ROI-driven, phased</div>
+    </div>
+    <div class="phase-list">
+      <div class="phase-row">
+        <div class="phase-name">PHASE 1<br>0–3 months</div>
+        <div class="phase-desc">Stop the financial leakage.
+          <ul><li>Real-time duplicate detection in top 10 districts</li><li>Audit high-risk states, clean legacy data</li><li>Retrain enrollment operators</li></ul>
         </div>
+        <div class="phase-invest">Investment<b>₹50 Cr</b>~10× ROI year 1</div>
       </div>
-      <div class="reveal">
-        <h3 style="font-size:23px; margin-bottom:16px;">Why large demographic databases drift</h3>
-        <div class="insight-bullets">
-          <div class="b"><strong>Multi-source collection</strong><p>Records ingested from parallel enrolment channels without a shared identity key.</p></div>
-          <div class="b"><strong>Regional partitioning overlaps</strong><p>State-wise data slices occasionally re-capture the same citizen record.</p></div>
-          <div class="b"><strong>System replication errors</strong><p>Sync retries across centres write the same update more than once.</p></div>
+      <div class="phase-row">
+        <div class="phase-name">PHASE 2<br>3–6 months</div>
+        <div class="phase-desc">Fix infrastructure gaps & recover missing children.
+          <ul><li>School–Aadhaar integration in bottom districts</li><li>Mobile enrollment camps in 5,000 schools</li><li>Biometric cross-verification enforced</li></ul>
         </div>
-        <h4 style="margin-top:26px; font-size:14px; color:var(--teal); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.05em;">Our 8-step deduplication pipeline</h4>
-        <div class="stack-row" style="margin-top:12px;">
-          <span class="chip">1 · Multi-state aggregation</span>
-          <span class="chip">2 · Exact row matching</span>
-          <span class="chip">3 · Pattern frequency</span>
-          <span class="chip">4 · Geo validation</span>
-          <span class="chip">5 · Statistical verification</span>
-          <span class="chip">6 · First-occurrence retention</span>
-          <span class="chip">7 · Audit trail</span>
-          <span class="chip">8 · QA checks</span>
+        <div class="phase-invest">Investment<b>₹15 Cr</b>50,000+ children documented</div>
+      </div>
+      <div class="phase-row">
+        <div class="phase-name">PHASE 3<br>6–12 months</div>
+        <div class="phase-desc">Prevent recurrence at scale.
+          <ul><li>AI-based duplicate prevention system</li><li>Central monitoring dashboard with district rankings</li><li>Performance-based incentives for clean data</li></ul>
         </div>
+        <div class="phase-invest">Outcome<b>Zero-repeat</b>duplication</div>
       </div>
     </div>
   </section>
 
-  <!-- ================= DATA INSIGHTS ================= -->
-  <section id="insights">
-    <div class="section-head reveal"><span class="section-num">05</span><h2>Data insights</h2></div>
-    <p class="section-sub reveal">Cumulative update volume across states and districts — the map of where Aadhaar infrastructure is under the most organic demand.</p>
-
-    <div class="chart-panel reveal" style="margin-bottom:24px;">
-      <div class="chead"><h4>Top 10 states — cumulative Aadhaar updates</h4><span>Total updates</span></div>
-      <div class="barchart">
-        <div class="bar-row"><span class="bar-label">Uttar Pradesh</span><div class="bar-track"><div class="bar-fill" style="--w:100%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">6,460,511</span></div>
-        <div class="bar-row"><span class="bar-label">Maharashtra</span><div class="bar-track"><div class="bar-fill" style="--w:59.2%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">3,824,892</span></div>
-        <div class="bar-row"><span class="bar-label">Bihar</span><div class="bar-track"><div class="bar-fill" style="--w:56.3%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">3,638,845</span></div>
-        <div class="bar-row"><span class="bar-label">West Bengal</span><div class="bar-track"><div class="bar-fill" style="--w:44.0%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">2,844,337</span></div>
-        <div class="bar-row"><span class="bar-label">Madhya Pradesh</span><div class="bar-track"><div class="bar-fill" style="--w:32.6%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">2,104,635</span></div>
-        <div class="bar-row"><span class="bar-label">Rajasthan</span><div class="bar-track"><div class="bar-fill" style="--w:31.9%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">2,058,897</span></div>
-        <div class="bar-row"><span class="bar-label">Tamil Nadu</span><div class="bar-track"><div class="bar-fill" style="--w:26.1%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">1,686,595</span></div>
-        <div class="bar-row"><span class="bar-label">Andhra Pradesh</span><div class="bar-track"><div class="bar-fill" style="--w:25.4%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">1,642,143</span></div>
-        <div class="bar-row"><span class="bar-label">Chhattisgarh</span><div class="bar-track"><div class="bar-fill" style="--w:22.0%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">1,421,369</span></div>
-        <div class="bar-row"><span class="bar-label">Gujarat</span><div class="bar-track"><div class="bar-fill" style="--w:21.0%; background:linear-gradient(90deg,var(--saffron),var(--teal-deep));"></div></div><span class="bar-value">1,358,115</span></div>
-      </div>
-    </div>
-
-    <div class="grid g3" style="margin-bottom:24px;">
-      <div class="card reveal"><span class="k">Dominance</span><h4>Uttar Pradesh leads by a wide margin</h4><p>6,460,511 updates — nearly double the second-ranked state, signalling demand for specialised high-capacity hubs.</p></div>
-      <div class="card reveal"><span class="k">High-volume cluster</span><h4>Maharashtra &amp; Bihar follow closely</h4><p>3.82M and 3.63M respectively, together forming a high-demand belt across the country's core.</p></div>
-      <div class="card reveal"><span class="k">Disparity</span><h4>UP → Gujarat: a 5x drop</h4><p>From the top state to the 10th (Gujarat, 1.35M), the gap shows infrastructure needs are anything but uniform.</p></div>
-    </div>
-
-    <div class="chart-panel reveal">
-      <div class="chead"><h4>Top 10 districts — highest Aadhaar updates</h4><span>Urban infrastructure hubs</span></div>
-      <div class="barchart">
-        <div class="bar-row"><span class="bar-label">Thane</span><div class="bar-track"><div class="bar-fill" style="--w:100%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">326,749</span></div>
-        <div class="bar-row"><span class="bar-label">Pune</span><div class="bar-track"><div class="bar-fill" style="--w:99.8%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">326,083</span></div>
-        <div class="bar-row"><span class="bar-label">South 24 Parganas</span><div class="bar-track"><div class="bar-fill" style="--w:91.9%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">300,104</span></div>
-        <div class="bar-row"><span class="bar-label">Murshidabad</span><div class="bar-track"><div class="bar-fill" style="--w:80.5%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">263,029</span></div>
-        <div class="bar-row"><span class="bar-label">Surat</span><div class="bar-track"><div class="bar-fill" style="--w:78.7%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">257,237</span></div>
-        <div class="bar-row"><span class="bar-label">Bengaluru</span><div class="bar-track"><div class="bar-fill" style="--w:67.7%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">221,322</span></div>
-        <div class="bar-row"><span class="bar-label">North West Delhi</span><div class="bar-track"><div class="bar-fill" style="--w:66.7%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">217,905</span></div>
-        <div class="bar-row"><span class="bar-label">North 24 Parganas</span><div class="bar-track"><div class="bar-fill" style="--w:64.3%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">210,114</span></div>
-        <div class="bar-row"><span class="bar-label">Solapur</span><div class="bar-track"><div class="bar-fill" style="--w:61.2%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">199,966</span></div>
-        <div class="bar-row"><span class="bar-label">Ahmedabad</span><div class="bar-track"><div class="bar-fill" style="--w:60.7%; background:linear-gradient(90deg,var(--gold),var(--saffron-deep));"></div></div><span class="bar-value">198,239</span></div>
-      </div>
-    </div>
-    <p class="section-sub reveal" style="margin-top:24px; margin-bottom:0;">Thane (326,749) and Pune (326,083) top the list — Maharashtra's urban corridors carry the country's heaviest load, with West Bengal's South &amp; North 24 Parganas close behind, correlating with the duplication risk identified earlier.</p>
-  </section>
-
-  <!-- ================= POLICY BRIEF ================= -->
-  <section id="policy">
-    <div class="section-head reveal"><span class="section-num">06</span><h2>Executive policy brief — demographic optimization</h2></div>
-
-    <div class="grid g2" style="align-items:center; margin-bottom:48px;">
-      <div class="chart-panel reveal">
-        <div class="chead"><h4>Update volume by age group</h4><span>32,998,725 adults · 3,597,704 children</span></div>
-        <div class="donut-wrap">
-          <div class="donut" style="background:conic-gradient(var(--saffron) 0% 90.2%, var(--teal) 90.2% 100%);">
-            <div class="donut-center"><div class="big">90.2%</div><div class="small">Adults 17+</div></div>
-          </div>
-          <div class="legend">
-            <div class="row"><span class="name"><span class="sw" style="background:var(--saffron);"></span>Adults (17+)</span><span class="val">32,998,725</span></div>
-            <div class="row"><span class="name"><span class="sw" style="background:var(--teal);"></span>Children (5–17)</span><span class="val">3,597,704</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="reveal">
-        <p style="font-size:15.5px; color:var(--cream-dim); margin-bottom:20px;">Adults (17+) drive <strong style="color:var(--cream)">90.2%</strong> of update volume. Children (5–17) sit at just <strong style="color:var(--cream)">9.8%</strong> — the demographic most critical to long-term database accuracy through mandatory biometric milestones.</p>
-        <div class="insight-bullets">
-          <div class="b"><strong>Mandatory academic linkage</strong><p>Tie Aadhaar verification to school admissions and Class 10 / 12 exam registration.</p></div>
-          <div class="b"><strong>School-based delivery</strong><p>On-campus Aadhaar camps to proactively capture the 3.5M+ child demographic.</p></div>
-          <div class="b"><strong>Milestone mandates</strong><p>Enforce biometric updates at ages 5 and 15 for lifelong data integrity.</p></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-panel reveal" style="margin-bottom:40px;">
-      <div class="chead"><h4>Regional distribution — total Aadhaar updates</h4><span>Central · East · South · North · West · Northeast · Other</span></div>
-      <div class="barchart">
-        <div class="bar-row"><span class="bar-label">Central</span><div class="bar-track"><div class="bar-fill" style="--w:100%; background:linear-gradient(90deg,var(--saffron),var(--gold));"></div></div><span class="bar-value">9,986,515</span></div>
-        <div class="bar-row"><span class="bar-label">East</span><div class="bar-track"><div class="bar-fill" style="--w:84.1%; background:linear-gradient(90deg,var(--saffron),var(--gold));"></div></div><span class="bar-value">8,400,205</span></div>
-        <div class="bar-row"><span class="bar-label">South</span><div class="bar-track"><div class="bar-fill" style="--w:64.3%; background:linear-gradient(90deg,var(--teal-deep),var(--teal));"></div></div><span class="bar-value">6,423,765</span></div>
-        <div class="bar-row"><span class="bar-label">North</span><div class="bar-track"><div class="bar-fill" style="--w:52.6%; background:#7FA7D6;"></div></div><span class="bar-value">5,249,042</span></div>
-        <div class="bar-row"><span class="bar-label">West</span><div class="bar-track"><div class="bar-fill" style="--w:52.3%; background:#7FA7D6;"></div></div><span class="bar-value">5,219,788</span></div>
-        <div class="bar-row"><span class="bar-label">Northeast</span><div class="bar-track"><div class="bar-fill" style="--w:12.6%; background:var(--rose);"></div></div><span class="bar-value">1,259,718</span></div>
-        <div class="bar-row"><span class="bar-label">Other</span><div class="bar-track"><div class="bar-fill" style="--w:2%; background:#6B7280;"></div></div><span class="bar-value">57,395</span></div>
-      </div>
-    </div>
-
-    <div class="grid g2 reveal">
-      <div class="strategy a">
-        <span class="tag">Strategy A</span>
-        <h4>Infrastructure &amp; load management</h4>
-        <div class="target">Target: Central (9.9M) · East (8.4M) · South (6.4M)</div>
-        <p style="color:var(--cream-dim); font-size:14px;">Invest in infrastructure expansion and processing capacity to manage high organic demand in developed, densely-populated regions.</p>
-        <ul>
-          <li>Permanent centres &amp; mini-hubs in high-density districts</li>
-          <li>Backend system upgrades for faster processing</li>
-          <li>Faster DBT delivery, lower per-update cost</li>
-        </ul>
-      </div>
-      <div class="strategy b">
-        <span class="tag">Strategy B</span>
-        <h4>Awareness &amp; inclusion expansion</h4>
-        <div class="target">Target: North · West · Northeast</div>
-        <p style="color:var(--cream-dim); font-size:14px;">Increase awareness, accessibility, and trust in regions with lower update penetration.</p>
-        <ul>
-          <li>Mobile enrolment units &amp; temporary camps</li>
-          <li>Localised campaigns through schools &amp; local offices</li>
-          <li>Cleaner databases, fewer exclusion errors</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= DUPLICATION ZONES ================= -->
-  <section id="zones">
-    <div class="section-head reveal"><span class="section-num">07</span><h2>High duplication zones</h2></div>
-    <div class="alert-banner reveal">
-      <div class="pulse"></div>
-      <div class="txt">Immediate action required — <b>22.89%</b> of records are duplicated across systematically identified district hotspots.</div>
-    </div>
-
-    <div class="chart-panel reveal">
-      <div class="chead"><h4>Top 10 districts — infrastructure upgrade priority</h4><span>Duplicate entry count</span></div>
-      <div class="barchart">
-        <div class="bar-row"><span class="bar-label">WB · North 24 Parganas</span><div class="bar-track"><div class="bar-fill" style="--w:100%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">6,870</span></div>
-        <div class="bar-row"><span class="bar-label">AP · East Godavari</span><div class="bar-track"><div class="bar-fill" style="--w:93.7%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">6,438</span></div>
-        <div class="bar-row"><span class="bar-label">WB · Barddhaman</span><div class="bar-track"><div class="bar-fill" style="--w:87.0%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">5,976</span></div>
-        <div class="bar-row"><span class="bar-label">MH · Pune</span><div class="bar-track"><div class="bar-fill" style="--w:82.0%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">5,632</span></div>
-        <div class="bar-row"><span class="bar-label">KL · Thrissur</span><div class="bar-track"><div class="bar-fill" style="--w:75.7%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">5,202</span></div>
-        <div class="bar-row"><span class="bar-label">AP · West Godavari</span><div class="bar-track"><div class="bar-fill" style="--w:73.8%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">5,070</span></div>
-        <div class="bar-row"><span class="bar-label">AP · Guntur</span><div class="bar-track"><div class="bar-fill" style="--w:68.6%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">4,714</span></div>
-        <div class="bar-row"><span class="bar-label">AP · Krishna</span><div class="bar-track"><div class="bar-fill" style="--w:66.3%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">4,556</span></div>
-        <div class="bar-row"><span class="bar-label">AP · Chittoor</span><div class="bar-track"><div class="bar-fill" style="--w:65.6%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">4,504</span></div>
-        <div class="bar-row"><span class="bar-label">KL · Palakkad</span><div class="bar-track"><div class="bar-fill" style="--w:65.4%; background:linear-gradient(90deg,var(--rose),var(--saffron));"></div></div><span class="bar-value">4,490</span></div>
-      </div>
-    </div>
-
-    <div class="evidence-stats reveal">
-      <div class="e"><div class="n">51.0%</div><div class="l">Andhra Pradesh duplication rate</div></div>
-      <div class="e"><div class="n">52.1%</div><div class="l">West Bengal duplication rate</div></div>
-      <div class="e"><div class="n">44.2%</div><div class="l">Tamil Nadu duplication rate</div></div>
-      <div class="e"><div class="n">₹4.7 Cr</div><div class="l">Direct loss from redundant processing</div></div>
-    </div>
-
-    <div class="grid g2" style="margin-top:32px;">
-      <div class="card reveal">
-        <span class="k">Root causes, validated</span>
-        <ul class="obj-list" style="grid-template-columns:1fr;">
-          <li>No real-time duplicate validation</li>
-          <li>Weak network connectivity at enrolment centres</li>
-          <li>Manual data entry without automated checks</li>
-          <li>Delayed database synchronisation</li>
-          <li>Insufficient operator training</li>
-        </ul>
-      </div>
-      <div class="card reveal">
-        <span class="k">Wider risk picture</span>
-        <ul class="obj-list" style="grid-template-columns:1fr;">
-          <li>Child coverage gap: 2–3 lakh children at risk of welfare exclusion</li>
-          <li>Top 1% of pincodes handle 40%+ of all updates</li>
-          <li>100× spread between top and bottom districts</li>
-          <li>₹500 Cr+ potential savings from duplicate prevention</li>
-          <li>₹1,000 Cr+ savings possible via accurate DBT targeting</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= ROADMAP ================= -->
-  <section id="roadmap">
-    <div class="section-head reveal"><span class="section-num">08</span><h2>Recommended roadmap</h2></div>
-    <p class="section-sub reveal">A phased, ROI-driven action plan — from stopping the financial bleed to building a self-correcting system.</p>
-
-    <div class="roadmap reveal">
-      <div class="phase">
-        <div class="ph-head"><h4>Stop the loss</h4><span class="window">0 – 3 months</span></div>
-        <ul>
-          <li>Real-time duplicate detection in the top 5 states</li>
-          <li>Mandatory biometric cross-verification</li>
-          <li>Training for 10,000+ enrolment operators</li>
-        </ul>
-        <div class="metrics"><div><strong>₹50 Cr</strong>Investment</div><div><strong>~10×</strong>ROI within year one</div></div>
-      </div>
-      <div class="phase">
-        <div class="ph-head"><h4>Recover the missing</h4><span class="window">3 – 6 months</span></div>
-        <ul>
-          <li>School–Aadhaar integration in bottom-ranked districts</li>
-          <li>Mobile enrolment camps across 5,000 schools</li>
-          <li>Integration with Mid-Day Meal &amp; scholarship systems</li>
-        </ul>
-        <div class="metrics"><div><strong>₹15 Cr</strong>Investment</div><div><strong>50,000+</strong>Children documented</div></div>
-      </div>
-      <div class="phase">
-        <div class="ph-head"><h4>Prevent recurrence</h4><span class="window">6 – 12 months</span></div>
-        <ul>
-          <li>AI-based duplicate prevention system</li>
-          <li>Central monitoring dashboard with district rankings</li>
-          <li>Performance-based incentives for clean data</li>
-        </ul>
-        <div class="metrics"><div><strong>Zero-repeat</strong>Duplication target</div><div><strong>Lower</strong>Operating cost</div></div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- ================= CONCLUSION ================= -->
-<section class="finale" id="conclusion">
-  <div class="wrap finale-grid">
-    <div class="reveal">
-      <h2>Clean data is a governance instrument, not a technical footnote.</h2>
-      <p>474,305 duplicate records, a sharp child-coverage gap, and steep geographic inequality all translate directly into financial leakage, exclusion, and infrastructure misallocation.</p>
-      <p>A targeted ₹265 crore investment can return ₹1,500+ crore in efficiency gains — bringing 2+ crore underserved citizens into the system and formally linking 2–3 lakh children to welfare and education.</p>
-      <div class="quote">"In God we trust. All others must bring data."<span>— W. Edwards Deming</span></div>
-      <div class="cta-list">
-        <div class="r"><b>01</b> Adopt these recommendations in the next budget cycle</div>
-        <div class="r"><b>02</b> Pilot solutions in identified critical districts</div>
-        <div class="r"><b>03</b> Establish a national Aadhaar data quality task force</div>
-        <div class="r"><b>04</b> Make demographic analytics a cornerstone of policy planning</div>
-      </div>
-    </div>
-    <div class="reveal impact-stats">
-      <div class="row"><div class="num">₹265 Cr</div><div class="lab">Total phased investment proposed</div></div>
-      <div class="row"><div class="num">₹1,500 Cr+</div><div class="lab">Projected efficiency gains</div></div>
-      <div class="row"><div class="num">2+ Cr</div><div class="lab">Underserved citizens included</div></div>
-      <div class="row"><div class="num">2–3 Lakh</div><div class="lab">Children linked to welfare &amp; education</div></div>
-      <div class="row"><div class="num">36.6M</div><div class="lab">Verified population records</div></div>
-    </div>
-  </div>
-</section>
-
-<footer class="wrap">
-  <div class="foot-grid">
-    <div class="l"><strong>UIDAI Data Hackathon 2026</strong>Aadhaar Demographic Update Dataset — Vinit Kumar Karmakr, Team UIDAI_5216</div>
-    <div class="badge-row">
-      <a href="mailto:k.vinitkarmkar@gmail.com">k.vinitkarmkar@gmail.com</a>
-    </div>
-  </div>
-</footer>
+  <footer>Aadhaar Demographic Update Dataset · UIDAI Data Hackathon 2026 · Team UIDAI_5216</footer>
+</div>
 
 <script>
-  // ---- scroll progress ----
-  const progress = document.getElementById('progress');
-  window.addEventListener('scroll', ()=>{
-    const h = document.documentElement;
-    const pct = (h.scrollTop)/(h.scrollHeight - h.clientHeight)*100;
-    progress.style.width = pct + '%';
+  Chart.defaults.font.family = 'Inter';
+  Chart.defaults.color = '#6B6E76';
+
+  // Age donut
+  new Chart(document.getElementById('ageChart'), {
+    type:'doughnut',
+    data:{
+      labels:['Adults (17+)','Children (5–17)'],
+      datasets:[{ data:[32998723,3597705], backgroundColor:['#1E3350','#9C7A3C'], borderWidth:0 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      cutout:'68%',
+      plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, font:{size:11.5} } } }
+    }
   });
 
-  // ---- reveal + bar animation on scroll ----
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.12});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-  document.querySelectorAll('.barchart').forEach(el=>io.observe(el));
-
-  // ---- dot nav active state ----
-  const sections = ['hero','intro','dataflaw','cleaning','insights','policy','zones','roadmap','conclusion'].map(id=>document.getElementById(id));
-  const dots = document.querySelectorAll('#dotnav a');
-  const navIO = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        dots.forEach(d=>d.classList.remove('active'));
-        const idx = sections.indexOf(e.target);
-        if(dots[idx]) dots[idx].classList.add('active');
+  // Regional bar
+  new Chart(document.getElementById('regionChart'), {
+    type:'bar',
+    data:{
+      labels:['Central','East','South','North','West','Northeast','Other'],
+      datasets:[{ data:[9986515,8400205,6423765,5249042,5219788,1259718,57395], backgroundColor:'#1E3350', borderRadius:2, maxBarThickness:28 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{size:11} } },
+        y:{ grid:{ color:'#E7E4DC' }, ticks:{ font:{family:'IBM Plex Mono', size:10} } }
       }
-    });
-  }, {threshold:0.5});
-  sections.forEach(s=>{ if(s) navIO.observe(s); });
+    }
+  });
+
+  // Top states horizontal bar
+  new Chart(document.getElementById('stateChart'), {
+    type:'bar',
+    data:{
+      labels:['Uttar Pradesh','Maharashtra','Bihar','West Bengal','Madhya Pradesh','Rajasthan','Tamil Nadu','Andhra Pradesh','Chhattisgarh','Gujarat'],
+      datasets:[{ data:[6460511,3824892,3638845,2844337,2104635,2058897,1686595,1642143,1421369,1358115], backgroundColor:'#1E3350', borderRadius:2 }]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ grid:{ color:'#E7E4DC' }, ticks:{ font:{family:'IBM Plex Mono', size:10} } },
+        y:{ grid:{ display:false }, ticks:{ font:{size:11} } }
+      }
+    }
+  });
+
+  // Top districts horizontal bar
+  new Chart(document.getElementById('districtChart'), {
+    type:'bar',
+    data:{
+      labels:['Thane','Pune','South 24 Parganas','Murshidabad','Surat','Bengaluru','North West Delhi','North 24 Parganas','Solapur','Ahmedabad'],
+      datasets:[{ data:[326749,326083,300104,263029,257237,221322,217905,210114,199966,198239], backgroundColor:'#9C7A3C', borderRadius:2 }]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ grid:{ color:'#E7E4DC' }, ticks:{ font:{family:'IBM Plex Mono', size:10} } },
+        y:{ grid:{ display:false }, ticks:{ font:{size:11} } }
+      }
+    }
+  });
+
+  // Duplication hotspot table
+  const dup = [
+    {rank:1, place:'West Bengal — North 24 Parganas', count:6870, high:true},
+    {rank:2, place:'Andhra Pradesh — East Godavari', count:6438, high:true},
+    {rank:3, place:'West Bengal — Barddhaman', count:5976, high:true},
+    {rank:4, place:'Maharashtra — Pune', count:5632, high:true},
+    {rank:5, place:'Kerala — Thrissur', count:5202, high:false},
+    {rank:6, place:'Andhra Pradesh — West Godavari', count:5070, high:false},
+    {rank:7, place:'Andhra Pradesh — Guntur', count:4714, high:false},
+    {rank:8, place:'Andhra Pradesh — Krishna', count:4556, high:false},
+    {rank:9, place:'Andhra Pradesh — Chittoor', count:4504, high:false},
+    {rank:10, place:'Kerala — Palakkad', count:4490, high:false},
+  ];
+  document.getElementById('dupTable').innerHTML = dup.map(d => `
+    <tr>
+      <td><span class="priority-badge ${d.high ? '' : 'low'}">${d.rank}</span></td>
+      <td>${d.place}</td>
+      <td class="num mono">${d.count.toLocaleString()}</td>
+    </tr>`).join('');
 </script>
+
 </body>
 </html>
