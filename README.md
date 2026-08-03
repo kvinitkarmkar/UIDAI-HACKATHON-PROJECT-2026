@@ -8,8 +8,6 @@ This project focuses on the large-scale analysis of Aadhaar update trends across
 
 ### **Key Impact & Data Audit (Post-Cleaning)**
 
-<img src="visuals/charts/duplicate_breakdown.png" width="100%">
-
 The data cleaning process was critical in identifying system inefficiencies:
 
 * **Duplicate Elimination**: Successfully identified and purged **474,307 duplicate records**, representing **22.89%** of the raw dataset.
